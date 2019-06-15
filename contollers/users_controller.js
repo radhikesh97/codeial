@@ -48,17 +48,19 @@ module.exports.create = function(req,res){
 }
 
 module.exports.createSession = function(req,res){
-    User.findOne({email:req.body.email},function(err,usr){
+    User.findOne({email:req.body.email},function(err,user){
         if(err){console.log("Error in signing in"); return;}
 
         if(user){
             if(user.password != req.body.password){
                 return res.redirect('back');
             }
-            return res.redirect('users/profile');
+            res.cookie('user_id',user.id);
+            return res.redirect('/users/profile');
         }
         else{
+            //console.log('gg');
             return res.redirect('back');_
         }
-    })
+    });
 }
