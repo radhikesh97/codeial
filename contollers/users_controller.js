@@ -1,9 +1,29 @@
 const User = require('../models/user');
 
 module.exports.profile = function(req,res){
-    return res.render('user',{
-        title: 'Profile'
-    });
+    
+    if(req.cookies.user_id){
+        User.findById(req.cookies.user_id,function(err,user){
+            if(err){console.log('Error in finding user frmo database!');return;}
+            if(user){
+                res.render('user',{
+                    title: 'Profile',
+                    user:user
+                })
+            }
+            else{
+                return res.redirect('/users/sign-in');
+            }
+        });
+    }
+    else{
+        res.redirect('/users/sign-in');
+    }
+    
+    /*return res.render('user',{
+        title: 'Profile',
+        
+    });*/
     //return res.end('<h1>Profile!!</h1>');
 }
 
@@ -18,6 +38,12 @@ module.exports.sign_in = function(req,res){
         title: 'Codeial | Sign In'
     })
 }
+
+module.exports.sign_out = function(req,res){
+    res.clearCookie("user_id");
+    res.redirect('back');
+}
+
 
 module.exports.create = function(req,res){
     if(req.body.password != req.body.confirm_password){
